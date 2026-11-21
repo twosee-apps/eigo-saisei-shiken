@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E1116">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>再生の試験</title>
+<style>
+:root{color-scheme:dark;--bg:#0E1116;--s:#171B22;--s2:#1F2430;--line:#2A303B;--t:#E8EAED;--sub:#8B93A1;--ac:#22D3EE;--ok:#22D3EE;--ng:#F2B27A;
+  --f:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;--m:ui-monospace,"SF Mono",Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t);font:15px/1.6 var(--f);padding:calc(16px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+main{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-size:22px;margin:0}
+.sub{color:var(--sub);font-size:13px;margin:0}
+section{background:var(--s);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+h2{font-size:15px;margin:0;display:flex;justify-content:space-between;gap:8px;align-items:center}
+h2 .no{font:600 12px var(--m);color:var(--sub)}
+p.how{margin:0;font-size:13.5px;color:#C9CED6}
+p.how b{color:var(--t)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;color:inherit;min-height:48px;padding:0 16px;border-radius:24px;border:1px solid var(--line);background:var(--s2);cursor:pointer}
+button.pri{background:var(--ac);color:#06222A;border-color:var(--ac);font-weight:700}
+button[aria-pressed="true"]{border-color:var(--ac);color:var(--ac)}
+button:active{transform:scale(.97)}
+button:disabled{opacity:.45}
+.judge{display:flex;flex-direction:column;gap:4px}
+.judge .lab{font-size:12.5px;color:var(--sub)}
+.judge .bt{display:flex;gap:8px}
+.judge button{flex:1;min-height:44px;font-size:14px}
+.judge button.on-ok{background:var(--ok);color:#06222A;border-color:var(--ok)}
+.judge button.on-ng{background:var(--ng);color:#2B1503;border-color:var(--ng)}
+.st{font:12.5px var(--m);color:var(--sub);word-break:break-all}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .2s}
+textarea{width:100%;min-height:180px;background:var(--bg);color:var(--t);border:1px solid var(--line);border-radius:12px;padding:10px;font:12px/1.5 var(--m)}
+.now{position:sticky;top:env(safe-area-inset-top);z-index:2;background:var(--s2);border-radius:14px;padding:10px 14px;font:13px var(--m);display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 8px}
+.mode{font:700 12px var(--m);color:var(--ac)}
+</style>
+</head>
+<body>
+<main>
+  <h1>再生の試験</h1>
+  <p class="sub">英語リスニングアプリの「音の鳴り方」だけを確かめるページです。上から順に試して、各項目の「できた／できない」を押してください。最後に結果をコピーして送ってください。</p>
+  <div class="now" id="now"><span id="nowName">停止中</span><span id="nowPos">0:00 / 0:00 · 1.0x</span><span class="mode" id="nowMode">鳴らし方：通常</span></div>
+
+  <section>
+    <h2>保存してオフラインで使う <span class="no">1</span></h2>
+    <p class="how">先に「ホーム画面に追加」してから、ホーム画面のアイコンで開き直して「保存する」を押します。<b>「オフラインで使えます」と出たときだけ</b>「できた」です。</p>
+    <div class="row"><button class="pri" id="save">保存する（約2.0MB）</button></div>
+    <div class="bar"><i id="saveBar"></i></div>
+    <div class="st" id="saveSt">未保存</div>
+    <div class="judge" data-k="保存"></div>
+  </section>
+
+  <section>
+    <h2>機内モードで鳴るか <span class="no">2</span></h2>
+    <p class="how">機内モードにして、<b>Wi‑Fi も切れている</b>ことを確かめます（機内モードでも Wi‑Fi が残る端末があります）。アプリを一度閉じてから開き直し、3 の「1問目を流す」を押して鳴れば「できた」。下の表示が「オフライン」になっているかも見てください。</p>
+    <div class="st" id="netSt"></div>
+    <div class="judge" data-k="機内モード"></div>
+  </section>
+
+  <section>
+    <h2>1問目のあと2問目が続けて鳴るか <span class="no">3</span></h2>
+    <p class="how"><b>画面をつけたまま</b>「1問目を流す」を1回だけ押して、触らずに待ちます。1問目（約37秒）が終わったあと、<b>2問目の声が実際に聞こえ</b>、下の表示で2問目の時間が進んでいれば「できた」。2問目が鳴らなかったら「2問目だけ流す」を押して、鳴るかを記録に残してください。</p>
+    <div class="row"><button class="pri" id="q1">1問目を流す</button><button id="q2only">2問目だけ流す</button><button id="stop">止める</button></div>
+    <div class="st" id="chainSt"></div>
+    <div class="judge" data-k="続けて再生"></div>
+  </section>
+
+  <section>
+    <h2>発言をタップしてその発言だけ鳴るか <span class="no">4</span></h2>
+    <p class="how">ボタンは1問目の発言（話し手が替わるまで）です。押すと、<b>その発言だけ鳴って、次の人の声が出る前に止まれば</b>「できた」。速さ 1.5x でも試してください。止まった位置は記録に残ります。</p>
+    <div class="row" id="lines"></div>
+    <div class="judge" data-k="発言タップ"></div>
+    <p class="how">再生中に「−5秒」を押して、5秒前に戻って続きが流れれば「できた」。</p>
+    <div class="row"><button id="back5">−5秒</button></div>
+    <div class="judge" data-k="5秒戻し"></div>
+  </section>
+
+  <section>
+    <h2>速さを変えても声が高くならないか <span class="no">5</span></h2>
+    <p class="how">「1問目を流す」で再生中に 1.5x を押し、<b>同じところを 1.0x と聞き比べて</b>声の高さが変わらなければ「できた」。そのまま2問目に替わったら、下の「実効」が 1.5 前後のままかも見てください（記録にも残ります）。</p>
+    <div class="row" id="speeds"></div>
+    <div class="st" id="rateSt"></div>
+    <div class="judge" data-k="速さ"></div>
+  </section>
+
+  <section>
+    <h2>画面を消しても流れ続けるか <span class="no">6</span></h2>
+    <p class="how">「流し聞き（約4分47秒）」を押すと速さは 1.0x に戻ります。<b>鳴り始めてから</b>電源ボタンで画面を消し、2分ほど待ってから画面をつけます。下に出る「進み具合」が <b>90%以上</b>なら「できた」。</p>
+    <div class="row"><button class="pri" id="flow">流し聞き（約4分47秒）</button></div>
+    <div class="st" id="flowSt"></div>
+    <div class="judge" data-k="画面を消して再生"></div>
+    <p class="how">もう一度画面を消して、ロック画面に再生・停止のボタンが出るかを見ます。出たら、そのボタンで<b>止めて、もう一度押して再開</b>できるかも試してください。</p>
+    <div class="judge" data-k="ロック画面のボタンが出た"></div>
+    <div class="judge" data-k="ロック画面のボタンで止めて再開"></div>
+  </section>
+
+  <section>
+    <h2>鳴らし方の切り替え（うまくいかないときだけ） <span class="no">7</span></h2>
+    <p class="how">2〜6でうまくいかなかったら、ここを「Blob」に替えて、その項目だけもう一度試します。判定は鳴らし方ごとに別々に残ります（上の帯に今の鳴らし方が出ます）。替えると再生は止まります。</p>
+    <div class="row"><button id="modeSw" aria-pressed="true">通常（SW）</button><button id="modeBlob" aria-pressed="false">Blob</button></div>
+    <div class="st" id="modeSt"></div>
+  </section>
+
+  <section>
+    <h2>結果を送る</h2>
+    <p class="how">判定と記録はこの端末に残ります（アプリを閉じても消えません）。別の人が試すときは「判定と記録を消す」を2回押してください。</p>
+    <div class="row"><button class="pri" id="copy">結果をコピー</button><button id="reset">判定と記録を消す</button></div>
+    <textarea id="out" readonly aria-label="結果"></textarea>
+  </section>
+</main>
+<audio id="au" preload="auto" playsinline></audio>
+<script>
+const VER = "2026-11-21c";
+const FILES = {q1:"audio/q1.m4a", q2:"audio/q2.m4a", flow:"audio/flow.m4a"};
+const SIZES = {q1:205023, q2:253994, flow:1643302};   // 配布した版の大きさ（保存の確かめに使う）
+const NAMES = {q1:"1問目（対話）", q2:"2問目（スピーチ）", flow:"流し聞き"};
+// 1問目の発言の区間（秒）。発言と発言の間は 0.45 秒・質問の前は 1.2 秒の無音
+const LINES = [[0,7.45,"発言1"],[7.9,16.38,"発言2"],[16.83,22.92,"発言3"],[23.38,29.0,"発言4"],[30.2,35.58,"質問"]];
+const CACHE = "audio-v1";
+const MODE_NAME = {sw:"通常", blob:"Blob"};
+const au = document.getElementById("au");   // audio 要素は1つを使い回す
+let mode = "sw", cur = null, rate = 1.0, stopAt = null, chain = false, token = 0, modeToken = 0;
+let blobs = {};                               // Blob モードの準備済み URL
+// 判定と記録は端末に残す（2 の手順でアプリを閉じても消えない＝Hydrogen 中5）
+const KEY = "saisei-"+VER;
+let log = [], res = {};                       // res[項目][鳴らし方] = できた／できない
+try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s){ log = s.log||[]; res = s.res||{}; } } catch(e){}
+function keep(){ try{ localStorage.setItem(KEY, JSON.stringify({log:log.slice(-300), res})); }catch(e){} }
+function L(s){ const d=new Date(); log.push(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0")+" "+s); keep(); render(); }
+const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone===true;
+function fmt(x){ x=Math.max(0,x||0); return Math.floor(x/60)+":"+String(Math.floor(x%60)).padStart(2,"0"); }
+const $ = id => document.getElementById(id);
+
+try { const m = localStorage.getItem("saisei-mode"); if (m==="blob"||m==="sw") mode = m; } catch(e){}
+
+// Service Worker と、その知らせ（何を返したか）
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").then(()=>L("SW 登録")).catch(e=>L("SW 失敗 "+e));
+  navigator.serviceWorker.addEventListener("message", e=>{ if (e.data && e.data.sw) L("SW: "+e.data.sw); });
+}
+function netShow(){ $("netSt").textContent = "いまの通信："+(navigator.onLine?"オンライン（機内モードになっていない）":"オフライン")+"／SW の制御："+(navigator.serviceWorker&&navigator.serviceWorker.controller?"あり":"なし"); }
+addEventListener("online", ()=>{ netShow(); L("通信 オンライン"); });
+addEventListener("offline", ()=>{ netShow(); L("通信 オフライン"); });
+
+// 鳴らし方ごとの音源。タップから play() までの間に待ち（await）を入れない＝端末の再生許可を崩さない
+function srcFor(key){
+  if (mode==="sw") return FILES[key];
+  return blobs[key] || null;
+}
+function applyRate(){
+  au.defaultPlaybackRate = rate; au.playbackRate = rate;
+  au.preservesPitch = true; au.webkitPreservesPitch = true;  // src を替えると戻る端末があるので毎回入れ直す
+}
+function load(key){
+  const src = srcFor(key);
+  if (!src) throw new Error("Blob の準備がまだ");
+  if (cur!==key || au.getAttribute("src")!==src){ au.src = src; cur = key; setMedia(key); L("読み込み "+key+"（"+MODE_NAME[mode]+"・通信 "+(navigator.onLine?"あり":"なし")+"）"); }
+  applyRate();
+}
+// how＝"chain"（1問目の後の自動）／"hand"（手で）
+function play(key, from, how){
+  const my = ++token;
+  try { load(key); } catch(e){ L("再生できない "+key+" "+e.message); return; }
+  if (from!=null){
+    // iPhone は音源の読み込み前（readyState 0）の位置指定を無視することがある＝読み込めてから入れる（Hydrogen 高1）
+    if (au.readyState < 1){ au.addEventListener("loadedmetadata", ()=>{ if (my===token){ au.currentTime = from; applyRate(); L("位置を入れた @"+from); } }, {once:true}); }
+    else au.currentTime = from;
+  }
+  const p = au.play();   // play() はタップの処理の中で待たずに呼ぶ
+  if (p && p.then) p.then(()=>{ if (my!==token){ au.pause(); L("古い再生要求を止めた "+key); return; } L("再生 "+key+" @"+au.currentTime.toFixed(2)); })
+                   .catch(e=>{ const m="再生できない "+key+" "+e.name+(e.name==="NotAllowedError"?"（自動再生として止められた）":"");
+                     L(m); if (how==="chain") $("chainSt").textContent="自動の2問目："+m; });
+}
+function stopAll(why){ token++; chain=false; stopAt=null; au.pause(); if (why) L(why); }
+
+// 実効の速さ：再生中、実時間2秒あたり何秒進んだか
+let probe = null, lastHow = null;
+function startProbe(){
+  if (probe) clearInterval(probe);
+  let w = performance.now(), p = au.currentTime, n = 0;
+  probe = setInterval(()=>{
+    if (au.paused){ clearInterval(probe); probe=null; return; }
+    const w2 = performance.now(), p2 = au.currentTime, eff = (p2-p)/((w2-w)/1000);
+    const msg = "実効 "+eff.toFixed(2)+"x（設定 "+au.playbackRate.toFixed(1)+"x・"+(NAMES[cur]||"")+"）";
+    $("rateSt").textContent = msg;
+    if (n===0 || n%5===0) L(msg);   // 鳴り始めの直後と10秒ごとに記録へ（Hydrogen 中5）
+    w = w2; p = p2; n++;
+  }, 2000);
+}
+au.addEventListener("loadedmetadata", applyRate);
+au.addEventListener("playing", ()=>{
+  applyRate();
+  L("鳴り始め "+cur+" @"+au.currentTime.toFixed(2)+" 速さ "+au.playbackRate);
+  if ("mediaSession" in navigator) navigator.mediaSession.playbackState = "playing";
+  startProbe();
+  if (cur==="q2"){ const my=token, how=lastHow, p=au.currentTime;
+    setTimeout(()=>{ if (my!==token || cur!=="q2") return;   // 3秒のうちに別の再生へ替わったら測らない
+      const moved=au.currentTime-p; const msg=(how==="chain"?"自動の2問目":"手で流した2問目")+"：実時間3秒で "+moved.toFixed(1)+"秒ぶん進んだ"+(moved<0.5?"（進んでいない）":"");
+      $("chainSt").textContent=msg; L(msg); }, 3000); }
+});
+au.addEventListener("ended", ()=>{
+  L("終わり "+cur);
+  if (cur==="flow" && hidAt){ flowEnd = {wall:(Date.now()-hidAt)/1000, moved:au.currentTime-hidPos}; L("画面オフのまま流し聞きが最後まで鳴った"); }
+  if (chain && cur==="q1"){ chain=false; lastHow="chain"; play("q2",0,"chain"); }
+});
+au.addEventListener("pause", ()=>{ L("一時停止 @"+au.currentTime.toFixed(2)+(document.hidden?"（画面オフ）":"")); if ("mediaSession" in navigator) navigator.mediaSession.playbackState = "paused"; });
+au.addEventListener("waiting", ()=>L("待ち（読み込み中）"));
+au.addEventListener("stalled", ()=>L("止まった（データが来ない）"));
+au.addEventListener("error", ()=>L("音源のエラー "+(au.error&&au.error.code)+"（"+cur+"・"+MODE_NAME[mode]+"）"));
+au.addEventListener("ratechange", ()=>L("速さ "+au.playbackRate));
+au.addEventListener("timeupdate", ()=>{
+  $("nowPos").textContent = fmt(au.currentTime)+" / "+fmt(au.duration)+" · "+au.playbackRate.toFixed(1)+"x";
+  $("nowName").textContent = (au.paused?"停止 ":"再生中 ")+(NAMES[cur]||"");
+});
+// 発言の止め：timeupdate（約0.25秒おき）では 1.5x で次の発言に漏れるので、30ms おきに見る
+setInterval(()=>{
+  if (stopAt!=null && !au.paused && au.currentTime>=stopAt.end-0.04){
+    au.pause(); L(stopAt.name+" 止めた位置 "+au.currentTime.toFixed(2)+"（目標 "+stopAt.end+"・次の人は "+stopAt.next+"〜）"); stopAt=null;
+  }
+}, 30);
+
+// 1 保存：保存を経由せずネットから取り（?fresh=1）、音声の型・大きさ・SW の制御まで確かめる
+$("save").onclick = async ()=>{
+  const st=$("saveSt"), bar=$("saveBar");
+  try{
+    const c = await caches.open(CACHE); const keys=Object.keys(FILES); let n=0;
+    for (const k of keys){
+      const r = await fetch(FILES[k]+"?fresh=1",{cache:"reload"});
+      const type = r.headers.get("Content-Type")||"";
+      if (!r.ok || r.status!==200 || r.type!=="basic") throw new Error(k+" の取得 "+r.status+" "+r.type);
+      if (!/^audio\/|^video\/mp4/.test(type)) throw new Error(k+" が音声ではない（"+type+"）");
+      const blob = await r.blob();
+      if (blob.size!==SIZES[k]) throw new Error(k+" の大きさが配布版と違う（"+blob.size+"／"+SIZES[k]+"）");
+      await c.put(new URL(FILES[k], location.href).href, new Response(blob, {headers:{"Content-Type": type, "Content-Length": String(blob.size)}}));
+      n++; bar.style.width=(n/keys.length*100)+"%";
+    }
+    for (const k of keys){ const m = await c.match(new URL(FILES[k], location.href).href); if (!m) throw new Error("保存の確かめで欠け "+k); const b = await m.clone().blob(); if (b.size!==SIZES[k]) throw new Error("保存の大きさが違う "+k); }
+    const ctrl = navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (!ctrl) throw new Error("SW がまだこのページを受け持っていない（一度閉じて開き直してから、もう一度）");
+    const shell = await caches.keys(); const sh = shell.find(x=>x.startsWith("shell-"));
+    if (!sh || !(await (await caches.open(sh)).match("index.html", {ignoreSearch:true}))) throw new Error("画面のファイルが保存されていない");
+    let p = navigator.storage && navigator.storage.persist ? await navigator.storage.persist() : "なし";
+    let e = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null;
+    if (isIOS && !isStandalone()) throw new Error("ホーム画面のアイコンから開いていません。iPhone は Safari とホーム画面のアプリで保存場所が別なので、アイコンから開き直して、もう一度「保存する」を押してください");
+    st.textContent = "オフラインで使えます（音声"+n+"本・画面 "+sh+"・"+(isStandalone()?"ホーム画面から":"ブラウザから")+"）／persist="+p+(e?" ／使用 "+(e.usage/1e6).toFixed(1)+"MB・上限 "+(e.quota/1e9).toFixed(1)+"GB":"");
+    L("保存 完了 版="+VER+" "+(isStandalone()?"ホーム画面から":"ブラウザから")+" persist="+p+(e?" quota="+(e.quota/1e9).toFixed(1)+"GB":""));
+    if (mode==="blob") await prepBlobs();
+  }catch(err){ st.textContent="保存できない："+err.message; L("保存 失敗 "+err.message); }
+  netShow();
+};
+// 3 続けて再生
+$("q1").onclick = ()=>{ stopAll(); chain=true; $("chainSt").textContent=""; play("q1",0,"hand"); };
+$("q2only").onclick = ()=>{ stopAll(); lastHow="hand"; L("（手で）2問目だけ"); play("q2",0,"hand"); };
+$("stop").onclick = ()=>stopAll("止める");
+// 4 発言タップ
+const lines=$("lines");
+LINES.forEach(([s,e,n],i)=>{ const b=document.createElement("button"); b.textContent=n;
+  b.onclick=()=>{ stopAll(); stopAt={end:e, name:n, next:(LINES[i+1]?LINES[i+1][0]:"なし")}; play("q1",s); }; lines.appendChild(b); });
+$("back5").onclick=()=>{ stopAt=null; const before=au.currentTime; au.currentTime=Math.max(0,au.currentTime-5); L("−5秒 "+before.toFixed(1)+" → "+au.currentTime.toFixed(1)+(au.paused?"（停止中だった）":"")); if(au.paused) au.play().catch(e=>L("再生できない "+e.name)); };
+// 5 速さ
+const sp=$("speeds");
+function setRate(r){ rate=r; au.defaultPlaybackRate=r; au.playbackRate=r; au.preservesPitch=true; au.webkitPreservesPitch=true;
+  sp.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed", x.dataset.r==String(r)?"true":"false")); }
+[1.0,1.2,1.5].forEach(r=>{ const b=document.createElement("button"); b.textContent=r.toFixed(1)+"x"; b.dataset.r=String(r); b.setAttribute("aria-pressed", r===1?"true":"false");
+  b.onclick=()=>setRate(r); sp.appendChild(b); });
+// 6 流し聞き（画面オフ）：1.0x にそろえ、期待した進みと実際の進みを並べる
+// 測るのは「流し聞きが鳴っている最中に画面を消した」ときだけ（Hydrogen 低9）。最後まで鳴ったら、その時点で確定
+let hidAt=null, hidPos=null, hidRate=1, flowEnd=null;
+$("flow").onclick=()=>{ stopAll(); setRate(1.0); L("流し聞き 開始（速さ 1.0）"); play("flow",0,"hand"); };
+document.addEventListener("visibilitychange", ()=>{
+  if (document.hidden){
+    L("画面オフ "+(NAMES[cur]||"")+" @"+au.currentTime.toFixed(1)+(au.paused?"（停止中）":""));
+    if (cur==="flow" && !au.paused){ hidAt=Date.now(); hidPos=au.currentTime; hidRate=au.playbackRate; flowEnd=null; }
+  } else {
+    L("画面オン "+(NAMES[cur]||"")+" @"+au.currentTime.toFixed(1)+(au.paused?"（停止中）":""));
+    if (hidAt){ const wall = flowEnd ? flowEnd.wall : (Date.now()-hidAt)/1000, moved = flowEnd ? flowEnd.moved : au.currentTime-hidPos;
+      const expect=wall*hidRate, pct=expect>0?moved/expect*100:0;
+      const msg="画面オフ "+wall.toFixed(0)+"秒（速さ "+hidRate+"）：期待 "+expect.toFixed(0)+"秒・実際 "+moved.toFixed(0)+"秒＝進み具合 "+pct.toFixed(0)+"%"+(flowEnd?"（最後まで鳴った時点で確定）":"");
+      $("flowSt").textContent=msg; L(msg); hidAt=null; flowEnd=null; }
+  }
+});
+// Media Session（ロック画面のボタン）。押されたら記録に残す
+function setMedia(key){
+  if (!("mediaSession" in navigator)) return;
+  const abs = f => new URL(f, location.href).href;
+  navigator.mediaSession.metadata = new MediaMetadata({title:NAMES[key], artist:"再生の試験", artwork:[{src:abs("icon-192.png"),sizes:"192x192",type:"image/png"},{src:abs("icon-512.png"),sizes:"512x512",type:"image/png"}]});
+  const h={play:()=>{L("ロック画面から 再生"); au.play().catch(e=>L("再生できない "+e.name));}, pause:()=>{L("ロック画面から 停止"); au.pause();},
+    seekbackward:()=>{L("ロック画面から −5秒"); au.currentTime=Math.max(0,au.currentTime-5);}, seekforward:()=>{L("ロック画面から +5秒"); au.currentTime+=5;}};
+  for (const [k,f] of Object.entries(h)) { try{ navigator.mediaSession.setActionHandler(k,f); }catch(e){} }
+}
+// 7 鳴らし方：Blob は先に3本とも準備しておき、タップからはすぐ play() する
+async function prepBlobs(){
+  const my = modeToken; const c = await caches.open(CACHE); const next = {};
+  for (const k of Object.keys(FILES)){
+    const r = await c.match(new URL(FILES[k], location.href).href);
+    if (!r){ for (const u of Object.values(next)) URL.revokeObjectURL(u); throw new Error("保存に "+k+" が無い（先に 1 の保存）"); }
+    next[k] = URL.createObjectURL(await r.blob());
+  }
+  // 準備の途中で鳴らし方が替わったら、作った分は捨てる（Hydrogen 低9）
+  if (my!==modeToken || mode!=="blob"){ for (const u of Object.values(next)) URL.revokeObjectURL(u); return; }
+  freeBlobs(); blobs = next; L("Blob の準備 完了（3本）");
+}
+function freeBlobs(){ for (const u of Object.values(blobs)) URL.revokeObjectURL(u); blobs = {}; }
+const mSw=$("modeSw"), mBl=$("modeBlob");
+async function setMode(m){
+  stopAll(); au.removeAttribute("src"); au.load(); cur=null;   // 前の音源を外してから解放する
+  modeToken++; mode=m; try{ localStorage.setItem("saisei-mode", m); }catch(e){}
+  mSw.setAttribute("aria-pressed",m==="sw"); mBl.setAttribute("aria-pressed",m==="blob");
+  $("nowMode").textContent="鳴らし方："+MODE_NAME[m]; L("鳴らし方 "+MODE_NAME[m]);
+  if (m==="blob"){ $("modeSt").textContent="Blob を準備中…"; try{ await prepBlobs(); $("modeSt").textContent="Blob の準備ができました"; }catch(e){ $("modeSt").textContent="Blob を準備できない："+e.message; L("Blob 準備 失敗 "+e.message); } }
+  else { freeBlobs(); $("modeSt").textContent=""; }
+  paint(); render();   // 判定ボタンの色を、いまの鳴らし方の判定に塗り直す（Hydrogen 中5）
+}
+mSw.onclick=()=>setMode("sw"); mBl.onclick=()=>setMode("blob");
+// 判定（鳴らし方ごとに別々に残す）
+document.querySelectorAll(".judge").forEach(j=>{
+  const k=j.dataset.k; const lab=document.createElement("div"); lab.className="lab"; lab.textContent=k; j.appendChild(lab);
+  const bt=document.createElement("div"); bt.className="bt"; j.appendChild(bt);
+  ["できた","できない"].forEach((t,i)=>{ const b=document.createElement("button"); b.textContent=t;
+    b.onclick=()=>{ (res[k] = res[k]||{})[mode]=t; L("判定 "+k+"＝"+t+"（"+MODE_NAME[mode]+"）"); paint(); }; bt.appendChild(b); });
+});
+function paint(){ document.querySelectorAll(".judge").forEach(j=>{ const v=(res[j.dataset.k]||{})[mode];
+  j.querySelectorAll(".bt button").forEach((b,i)=>b.className= v===(i?"できない":"できた") ? (i?"on-ng":"on-ok") : ""); }); }
+function render(){
+  $("out").value =
+    "【再生の試験の結果】版 "+VER+"\n端末: "+navigator.userAgent+"\nホーム画面から: "+(isStandalone()?"はい":"いいえ")+"\n"+
+    Object.entries(res).map(([k,v])=>"・"+k+"：通常="+(v.sw||"未")+"／Blob="+(v.blob||"未")).join("\n")+"\n--- 記録（"+log.length+"行・古い順）---\n"+log.slice(-300).join("\n");
+}
+$("copy").onclick=async()=>{ render(); try{ await navigator.clipboard.writeText($("out").value); $("copy").textContent="コピーしました"; }catch(e){ $("out").select(); $("copy").textContent="長押しでコピーしてください"; } };
+// 記録を消す（2回押しで消える＝誤操作よけ）
+let resetArmed = false;
+$("reset").onclick=()=>{ if (!resetArmed){ resetArmed=true; $("reset").textContent="もう一度押すと消えます"; setTimeout(()=>{ resetArmed=false; $("reset").textContent="判定と記録を消す"; }, 4000); return; }
+  res={}; log=[]; keep(); paint(); render(); resetArmed=false; $("reset").textContent="消しました"; };
+// 起動時：前回の鳴らし方を戻す
+mSw.setAttribute("aria-pressed",mode==="sw"); mBl.setAttribute("aria-pressed",mode==="blob"); $("nowMode").textContent="鳴らし方："+MODE_NAME[mode];
+if (mode==="blob") prepBlobs().then(()=>{$("modeSt").textContent="Blob の準備ができました（前回の鳴らし方）";}).catch(e=>{$("modeSt").textContent="Blob を準備できない："+e.message;});
+netShow(); paint(); render();
+</script>
+</body>
+</html>
